@@ -5,6 +5,8 @@ require("dotenv").config();
 const PORT =  process.env.PORT || 3000;
 const connectDB =  require("./config/db");
 app.use(cors());
+app.use(express.json());
+
 
 const {useAPIKEY} =  require("./middleware/middleware");
 
