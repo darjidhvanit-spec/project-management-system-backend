@@ -8,15 +8,7 @@ exports.createProject =  async (req,  res) =>{
     try {
         const {projectName ,description ,startDate,endDate,priority ,status,createdBy}=  req;
 
-        const projectadd = await project.create({
-            projectName,
-            description,
-            startDate,
-            endDate,
-            priority: priority || "Medium",
-            status: status || "Planning",
-            createdBy
-        });
+        const projectadd = await project.create({projectName,description,startDate,endDate, priority: priority || "Medium", status: status || "Planning",createdBy });
 
         // -----------------------------
         // Aggregation with User Lookup
@@ -69,11 +61,9 @@ exports.createProject =  async (req,  res) =>{
             }
         ]);
          responseSend(res, CODES?.CREATED, true, "Project created successfully", projectData);
-
         
     } catch (error) {
-        responseSend(res, CODES?.INTERNAL_SERVER_ERROR, false, "Error creating project", {});
-        
+        responseSend(res, CODES?.INTERNAL_SERVER_ERROR, false, "Error creating project", {});   
     }
 };
 
