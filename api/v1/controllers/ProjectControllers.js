@@ -1,6 +1,6 @@
 const { CODES, VALIDATION_RULES } = require("../../../config/constant");
 const { responseSend, checkValidationRules } = require("../../../middleware/middleware");
-const projectModel = require ("../../v1/models/ProjectModel");
+const projectModel = require ("../../v1/models/projectModel");
 
 // Create Project Insert Query 
 exports.createProject = async (req , res) =>{
