@@ -43,3 +43,47 @@ exports.getUser = async (req, res) => {
     }
 
 };
+
+// get login user query 
+exports.getloginUser = async (req, res) => {
+    try {
+        let request = req.body
+        const userlogin = await userModel.getloginUser(request, res);
+    } catch (error) {
+        responseSend(res, CODES?.INTERNAL_SERVER_ERROR, "Error fetching userlogin", false, {});
+    }
+
+};
+
+// get logout user query 
+exports.logoutUser = async (req, res) => {
+    try {
+        let request = req.body
+        // console.log("req headers", req.headers);
+        request.user_id = req.headers.user_id;
+        const userlogout = await userModel.logoutUser(request, res);
+    } catch (error) {
+        responseSend(res, CODES?.INTERNAL_SERVER_ERROR, "Error fetching userlogout", false, {});
+    }
+};
+
+// update user query  
+exports.updateUser = async (req, res) => {
+    try {
+        let request = req.body
+        const Userupdate = await userModel.updateUser(request, res);
+    } catch (error) {
+        responseSend(res, CODES?.INTERNAL_SERVER_ERROR, "Error fetching Userupdate", false, {});
+    }
+
+};
+
+// delete user query  
+exports.deleteUser =  async (req ,  res) =>{
+     try {
+        let request = req.body
+        const Userdelete = await userModel.deleteUser(request, res);
+    } catch (error) {
+        responseSend(res, CODES?.INTERNAL_SERVER_ERROR, "Error fetching Userdelete", false, {});
+    }
+};
