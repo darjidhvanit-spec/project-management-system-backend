@@ -13,6 +13,7 @@ const {useAPIKEY} =  require("./middleware/middleware");
 
 //Route
 const userRoutes =  require("./api/v1/routes/userRoutes");
+const projectRoutes =  require("./api/v1/routes/projectRoutes");
 
 
 //Middleware
@@ -22,6 +23,7 @@ app.use(useAPIKEY);
 connectDB();
 
 app.use("/user",userRoutes);
+app.use("/project",projectRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server Running ${PORT}`);
