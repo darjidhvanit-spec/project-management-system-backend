@@ -31,3 +31,15 @@ exports.RegisterUser = async (req, res) => {
     }
 
 };
+
+// get user list  query
+exports.getUser = async (req,  res) =>{
+    try {
+        const userList = await user.find().sort({ createdAt: -1 });
+
+        return responseSend(res, CODES?.SUCCESS, true, "User List Fetch Successfully", userList);
+    } catch (error) {
+        console.log(error);
+        return responseSend(res, CODES?.INTERNAL_SERVER_ERROR, false, "Error Fetching User List", {});
+    }
+};

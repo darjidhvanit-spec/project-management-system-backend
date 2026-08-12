@@ -7,6 +7,8 @@ const User_Routes =  require("../../v1/controllers/userControllers");
 
 router.post("/register_user",User_Routes.RegisterUser);
 
+router.get("/user_list",User_Routes.getUser);
+
 
 
 module.exports =  router;

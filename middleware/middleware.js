@@ -1,5 +1,6 @@
 const jwt =  require("jsonwebtoken");
 const {CODES} =  require("../config/constant");
+const Validator =  require('Validator');
 const cors = require("cors");
 
 
@@ -23,9 +24,39 @@ const responseSend = (res, code, success, message, data = {}) => {
     });
 };
 
+const checkValidationRules = (request, rules) => {
+    try {
+
+        const v = Validator.make(request, rules);
+
+        const validator = {
+            status: true,
+        }
+
+        if (v.fails()) {
+            const ValidatorErrors = v.getErrors();
+            validator.status = false
+            for (const key in ValidatorErrors) {
+                validator.error = ValidatorErrors[key][0];
+                break;
+            }
+        }
+        return validator;
+    } catch (error) {
+        console.log(error);
+
+        console?.log(error.message)
+
+    }
+
+    return false;
+};
+
+
 
 module.exports = {
     useAPIKEY: useAPIKEY,
     responseSend: responseSend,
+    checkValidationRules :checkValidationRules
 
 };
