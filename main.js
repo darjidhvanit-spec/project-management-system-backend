@@ -9,7 +9,7 @@ app.use(cors());
 app.use(express.json());
 
 
-const {useAPIKEY} =  require("./middleware/middleware");
+const {useAPIKEY,useAuthToken} =  require("./middleware/middleware");
 
 //Route
 const userRoutes =  require("./api/v1/routes/userRoutes");
@@ -18,6 +18,7 @@ const projectRoutes =  require("./api/v1/routes/projectRoutes");
 
 //Middleware
 app.use(useAPIKEY);
+app.use(useAuthToken);
 
 //DB Connection
 connectDB();

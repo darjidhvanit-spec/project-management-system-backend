@@ -13,16 +13,23 @@ const userSchema = new mongoose.Schema({
         unique: true,
 
     },
-    password :{
-        type :String, 
-        required : true,
+    password: {
+        type: String,
+        required: true,
     },
-    role :{
-        type : String,
-        enum: ["Admin","Manager","Member"],
-        default:"Member"
+    role: {
+        type: String,
+        enum: ["Admin", "Manager", "Member"],
+        default: "Member"
     },
-     isActive: {
+
+    device_info: {
+        type: JSON,
+        //empty object store 
+        default: {}
+    },
+    
+    isActive: {
         type: Boolean,
         default: true
     },
@@ -31,7 +38,7 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     }
-},{timestamps:true});
+}, { timestamps: true });
 
-module.exports =  mongoose.model("tbl_user",userSchema);
+module.exports = mongoose.model("tbl_user", userSchema);
 
