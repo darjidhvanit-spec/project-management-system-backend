@@ -6,6 +6,8 @@ const Project_Member_Routes = require("../../v1/controllers/projectmemberControl
 
 router.post("/projectmember_add",Project_Member_Routes.createProjectMember);
 
+router.get("/projectmember_list",Project_Member_Routes.getProjectMember);
+
 
 
 module.exports =  router;

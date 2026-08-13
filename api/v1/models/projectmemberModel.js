@@ -102,7 +102,6 @@ exports.createProjectMember = async (req, res) => {
         // --------------------------------
         // Aggregation
         // --------------------------------
-
         const projectMemberData =
             await projectmember.aggregate([
 
@@ -128,7 +127,7 @@ exports.createProjectMember = async (req, res) => {
                 {
                     $unwind: {
                         path: "$project",
-                       
+
                     }
                 },
 
@@ -148,7 +147,7 @@ exports.createProjectMember = async (req, res) => {
                 {
                     $unwind: {
                         path: "$memberUser",
-                        
+
                     }
                 },
                 // --------------------------------
@@ -165,7 +164,7 @@ exports.createProjectMember = async (req, res) => {
                 {
                     $unwind: {
                         path: "$addedByUser",
-                    
+
                     }
                 },
                 // --------------------------------
@@ -207,5 +206,106 @@ exports.createProjectMember = async (req, res) => {
         console.log("Create Project Member Error:", error);
 
         return responseSend(res, CODES.INTERNAL_SERVER_ERROR, false, "Error creating project member", error.message);
+    }
+};
+
+// get project member list query  
+exports.getProjectMember = async (req, res) => {
+    try {
+
+        const projectMemberData = await projectmember.aggregate([
+            // Join Project
+            {
+                $lookup: {
+                    from: "tbl_projects",
+                    localField: "projectId",
+                    foreignField: "_id",
+                    as: "project"
+                }
+            },
+
+            {
+                $unwind: {
+                    path: "$project",
+
+                }
+            },
+
+            // Join Member User
+            {
+                $lookup: {
+                    from: "tbl_users",
+                    localField: "userId",
+                    foreignField: "_id",
+                    as: "memberUser"
+                }
+            },
+
+
+            {
+                $unwind: {
+                    path: "$memberUser",
+
+                }
+            },
+
+            // Join Added By User
+            {
+                $lookup: {
+                    from: "tbl_users",
+                    localField: "addedBy",
+                    foreignField: "_id",
+                    as: "addedByUser"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$addedByUser",
+
+                }
+            },
+
+            // Select Fields
+            {
+                $project: {
+                    _id: 1,
+
+                    project: {
+                        _id: "$project._id",
+                        projectName: "$project.projectName",
+                        description: "$project.description",
+                        priority: "$project.priority",
+                        status: "$project.status"
+                    },
+
+                    member: {
+                        _id: "$memberUser._id",
+                        name: "$memberUser.name",
+                        email: "$memberUser.email",
+                        role: "$memberUser.role"
+                    },
+
+                    addedBy: {
+                        _id: "$addedByUser._id",
+                        name: "$addedByUser.name",
+                        email: "$addedByUser.email",
+                        role: "$addedByUser.role"
+                    },
+                }
+            },
+            // Latest Member First
+            {
+                $sort: {
+                    createdAt: -1
+                }
+            }
+        ]);
+
+        return responseSend(res, CODES.SUCCESS, true, "Project member list fetched successfully", projectMemberData);
+
+    } catch (error) {
+        console.log("Get Project Member Error:", error);
+
+        return responseSend(res, CODES.INTERNAL_SERVER_ERROR, false, "Error fetching project member list", {});
     }
 };
