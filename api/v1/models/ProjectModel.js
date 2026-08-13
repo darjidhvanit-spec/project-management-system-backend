@@ -1,14 +1,14 @@
 const { default: mongoose } = require("mongoose");
 const { responseSend } = require("../../../middleware/middleware");
-const project =  require("../../../modules/schema/projectSchema");
+const project = require("../../../modules/schema/projectSchema");
 const { CODES } = require("../../../config/constant");
 
 // Create Project Insert Query
-exports.createProject =  async (req,  res) =>{
+exports.createProject = async (req, res) => {
     try {
-        const {projectName ,description ,startDate,endDate,priority ,status,createdBy}=  req;
+        const { projectName, description, startDate, endDate, priority, status, createdBy } = req;
 
-        const projectadd = await project.create({projectName,description,startDate,endDate, priority: priority || "Medium", status: status || "Planning",createdBy });
+        const projectadd = await project.create({ projectName, description, startDate, endDate, priority: priority || "Medium", status: status || "Planning", createdBy });
 
         // -----------------------------
         // Aggregation with User Lookup
@@ -33,7 +33,7 @@ exports.createProject =  async (req,  res) =>{
             {
                 $unwind: {
                     path: "$createdByUser",
-                    
+
                 }
             },
 
@@ -60,15 +60,15 @@ exports.createProject =  async (req,  res) =>{
                 }
             }
         ]);
-         responseSend(res, CODES?.CREATED, true, "Project created successfully", projectData);
-        
+        responseSend(res, CODES?.CREATED, true, "Project created successfully", projectData);
+
     } catch (error) {
-        responseSend(res, CODES?.INTERNAL_SERVER_ERROR, false, "Error creating project", {});   
+        responseSend(res, CODES?.INTERNAL_SERVER_ERROR, false, "Error creating project", {});
     }
 };
 
 // get project list query  
-exports.getProject =  async (req ,  res) =>{
+exports.getProject = async (req, res) => {
     try {
         const projectData = await project.aggregate([
 
@@ -122,6 +122,128 @@ exports.getProject =  async (req ,  res) =>{
     } catch (error) {
         console.log("Get Project List Error:", error);
         responseSend(res, CODES?.INTERNAL_SERVER_ERROR, false, "Error fetching project list", {}
+        );
+    }
+};
+
+// Update Project Query  
+exports.updateProject = async (req, res) => {
+    try {
+
+        const { projectId, projectName, description, startDate, endDate, priority, status } = req;
+
+        if (!projectId) {
+            return responseSend(res, CODES.BAD_REQUEST, false, "Project ID is required", {});
+        }
+
+        const projectData = await project.findOne({
+            _id: projectId,
+
+        });
+
+        if (!projectData) {
+            return responseSend(res, CODES.NOT_FOUND, false, "Project not found", {});
+        }
+
+        const updateData = { projectName, description, startDate, endDate, priority, status };
+
+        const projectUpdate = await project.findByIdAndUpdate(
+            projectId,
+            {
+                $set: updateData
+            },
+            {
+                new: true,
+
+            }
+        );
+
+        const updatedProjectData = await project.aggregate([
+
+            // Find Updated Project
+            {
+                $match: {
+                    _id: projectUpdate._id
+                }
+            },
+
+            // Join tbl_users
+            {
+                $lookup: {
+                    from: "tbl_users",
+                    localField: "createdBy",
+                    foreignField: "_id",
+                    as: "createdByUser"
+                }
+            },
+
+            {
+                $unwind: {
+                    path: "$createdByUser",
+
+                }
+            },
+
+            // Select Fields
+            {
+                $project: {
+                    _id: 1,
+                    projectName: 1,
+                    description: 1,
+                    startDate: 1,
+                    endDate: 1,
+                    priority: 1,
+                    status: 1,
+
+                    createdBy: {
+                        _id: "$createdByUser._id",
+                        name: "$createdByUser.name",
+                        email: "$createdByUser.email",
+                        role: "$createdByUser.role"
+                    },
+
+                }
+            }
+        ]);
+
+        return responseSend(res, CODES.SUCCESS, true, "Project updated successfully", updatedProjectData);
+
+    } catch (error) {
+        console.log("Update Project Error:", error);
+
+        return responseSend(res, CODES.INTERNAL_SERVER_ERROR, false, "Error updating project", {}
+        );
+    }
+};
+
+// delete project query  
+exports.deleteProject = async (req, res) => {
+    try {
+        const { projectId } = req;
+
+        // Check User Id
+        if (!projectId) {
+            return responseSend(res, CODES?.BAD_REQUEST, false, "Project Id is required", {});
+        }
+
+        // Check User Exists
+        const projectData = await project.findById(projectId);
+
+        if (!projectData) {
+            return responseSend(res, CODES?.NOT_FOUND, false, "Project not found", {}
+            );
+        }
+
+        // Delete User
+        await project.findByIdAndDelete(projectId);
+
+        return responseSend(res, CODES?.SUCCESS, true, "Project deleted successfully", projectData
+        );
+
+    } catch (error) {
+        console.log("DELETE USER ERROR =>", error);
+        return responseSend(res, CODES?.INTERNAL_SERVER_ERROR, false, "Error deleting project",
+            {}
         );
     }
 };
