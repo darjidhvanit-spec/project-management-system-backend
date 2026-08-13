@@ -44,3 +44,23 @@ exports.getProjectMember = async (req, res) => {
     }
 
 };
+
+// update project member query
+exports.updateProjectMember = async (req, res) => {
+    try {
+        let request = req.body
+        const projectmemberupdate = await projectmemberModel.updateProjectMember(request, res);
+    } catch (error) {
+        responseSend(res, CODES?.INTERNAL_SERVER_ERROR, "Error fetching projectmemberupdate", false, {});
+    }
+};
+
+//delete  project member query 
+exports.deleteProjectMember =  async (req, res) => {
+    try {
+        let request = req.body
+        const projectmemberdelete = await projectmemberModel.deleteProjectMember(request, res);
+    } catch (error) {
+        responseSend(res, CODES?.INTERNAL_SERVER_ERROR, "Error fetching projectmemberdelete", false, {});
+    }
+};
