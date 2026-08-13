@@ -17,7 +17,7 @@ const useAPIKEY = (req, res, next) => {
 
 const useAuthToken = async (req, res, next) => {
     try {
-        const bypassLastPaths = ["register_user","user_login","user_list","user_update","user_delete"];
+        const bypassLastPaths = ["register_user","user_login","user_list","user_update","user_delete","projectmember_add","project_list","project_add"];
 
        // console.log("req.originalUrl.split('/')", req.originalUrl.split("/"));
 
