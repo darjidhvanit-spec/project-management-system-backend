@@ -45,5 +45,4 @@ exports.getProject = async (req ,  res) =>{
         } catch (error) {
             responseSend(res, CODES?.INTERNAL_SERVER_ERROR, "Error fetching projectlist", false, {});
         }
-
 };

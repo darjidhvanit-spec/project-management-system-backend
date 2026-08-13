@@ -15,6 +15,7 @@ const {useAPIKEY,useAuthToken} =  require("./middleware/middleware");
 const userRoutes =  require("./api/v1/routes/userRoutes");
 const projectRoutes =  require("./api/v1/routes/projectRoutes");
 const projectmemberRoutes =  require("./api/v1/routes/projectmemberRoutes");
+const taskRoutes =  require("./api/v1/routes/taskRoutes");
 
 
 //Middleware
@@ -27,6 +28,7 @@ connectDB();
 app.use("/user",userRoutes);
 app.use("/project",projectRoutes);
 app.use("/projectmember",projectmemberRoutes);
+app.use("/task",taskRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server Running ${PORT}`);

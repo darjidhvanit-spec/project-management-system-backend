@@ -15,13 +15,13 @@ const taskSchema = new mongoose.Schema({
 
     projectId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "tbl_projects",
+        ref: "tbl_project",
         required: true
     },
 
     assignedTo: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "tbl_users",
+        ref: "tbl_user",
         required: true
     },
 
@@ -32,12 +32,12 @@ const taskSchema = new mongoose.Schema({
     },
 
     startDate: {
-        type: Date,
+        type: String,
         required: true
     },
 
     dueDate: {
-        type: Date,
+        type: String,
         required: true
     },
 
@@ -49,7 +49,7 @@ const taskSchema = new mongoose.Schema({
 
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "tbl_users",
+        ref: "tbl_user",
         required: true
     },
 
