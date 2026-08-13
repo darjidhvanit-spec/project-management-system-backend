@@ -7,15 +7,15 @@ const projectmemberSchema = new mongoose.Schema({
         ref: "tbl_project",
         required: true
     },
-    userId: {
+    userId: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "tbl_users",
+        ref: "tbl_user",
         required: true
-    },
+    }],
 
     addedBy: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "tbl_users",
+        ref: "tbl_user",
         required: true
     },
 
@@ -30,6 +30,6 @@ const projectmemberSchema = new mongoose.Schema({
     }
 
 
-},{timestamps:true});
+}, { timestamps: true });
 
-module.exports = mongoose.model("tbl_project_member",projectmemberSchema);
+module.exports = mongoose.model("tbl_project_member", projectmemberSchema);
