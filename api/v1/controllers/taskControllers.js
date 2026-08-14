@@ -49,3 +49,25 @@ exports.getTask = async (req, res) => {
     }
 
 };
+
+// update task query  
+exports.updateTask =  async (req, res) => {
+    try {
+        let request = req.body
+        const taskupdate = await taskModel.updateTask(request, res);
+    } catch (error) {
+        responseSend(res, CODES?.INTERNAL_SERVER_ERROR, "Error fetching taskupdate", false, {});
+    }
+
+};
+
+// delete Task query 
+exports.deleteTask =  async (req, res) => {
+    try {
+        let request = req.body
+        const taskdelete = await taskModel.deleteTask(request, res);
+    } catch (error) {
+        responseSend(res, CODES?.INTERNAL_SERVER_ERROR, "Error fetching taskdelete", false, {});
+    }
+
+};

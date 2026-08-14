@@ -8,4 +8,8 @@ router.post("/task_add",Task_Routes.createTask);
 
 router.get("/task_list",Task_Routes.getTask);
 
+router.put("/task_update",Task_Routes.updateTask);
+
+router.delete("/task_delete",Task_Routes.deleteTask);
+
 module.exports =  router;
