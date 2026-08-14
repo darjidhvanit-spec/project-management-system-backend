@@ -70,7 +70,30 @@ exports.createProject = async (req, res) => {
 // get project list query  
 exports.getProject = async (req, res) => {
     try {
+        const { projectName, priority, status } = req;
+
+        const matchCondition = {};
+
+        if (projectName) {
+            matchCondition.projectName = {
+                $regex: projectName,
+                $options: "i"
+            }
+        }
+
+        if (priority) {
+            matchCondition.priority = priority;
+        }
+
+        if (status) {
+            matchCondition.status = status;
+        }
+
+
         const projectData = await project.aggregate([
+            {
+                $match: matchCondition
+            },
 
             // Join tbl_users
             {
