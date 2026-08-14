@@ -298,7 +298,6 @@ exports.updateProjectMember = async (req, res) => {
             );
         }
 
-
         const projectMemberData =
             await projectmember.findOne({
                 _id: projectMemberId
@@ -391,13 +390,6 @@ exports.updateProjectMember = async (req, res) => {
         const projectMemberUpdate =
             await projectmember.findByIdAndUpdate(
                 projectMemberId,
-                {
-                    $set: updateData
-                },
-                {
-                    new: true,
-
-                }
             );
 
         const updatedProjectMemberData =
