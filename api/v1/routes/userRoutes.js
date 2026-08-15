@@ -9,7 +9,7 @@ router.post("/register_user",User_Routes.RegisterUser);
 
 router.get("/user_list",User_Routes.getUser);
 
-router.get("/user_login",User_Routes.getloginUser);
+router.post("/user_login",User_Routes.getloginUser);
 
 router.get("/user_logout",User_Routes.logoutUser);
 

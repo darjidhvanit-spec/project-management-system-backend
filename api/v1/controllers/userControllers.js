@@ -51,7 +51,7 @@ exports.getloginUser = async (req, res) => {
         const userlogin = await userModel.getloginUser(request, res);
     } catch (error) {
         responseSend(res, CODES?.INTERNAL_SERVER_ERROR, "Error fetching userlogin", false, {});
-    }
+    }   
 
 };
 
