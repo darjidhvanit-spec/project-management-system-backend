@@ -4,33 +4,85 @@ const user = require("../../../modules/schema/userSchema");
 const { CODES } = require("../../../config/constant");
 
 // Create User Insert Query 
-
 exports.RegisterUser = async (req, res) => {
-    try {
+      try {
         const { name, email, password, role } = req;
 
+        
+        const nameRegex = /^[A-Za-z]+$/;
 
-        // check  duplicate email
-        const emailExists = await user.findOne({ email });
-        if (emailExists) {
-            return responseSend(res, CODES?.BAD_REQUEST, false, "Email already exists", {});
+        if (!nameRegex.test(name.trim())) {
+            return responseSend(
+                res,
+                CODES?.BAD_REQUEST,
+                false,
+                "Name must contain only letters",
+                {}
+            );
         }
 
-        //  insert in to object  in database 
-        const userData = { name: name, email: email, password: password, role: role };
+        const emailRegex =
+            /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-        //insert user 
+        if (!emailRegex.test(email.trim())) {
+            return responseSend(
+                res,
+                CODES?.BAD_REQUEST,
+                false,
+                "Please enter a valid email address",
+                {}
+            );
+        }
+
+
+      
+        const emailExists = await user.findOne({
+            email
+        });
+
+        if (emailExists) {
+            return responseSend(
+                res,
+                CODES?.BAD_REQUEST,
+                false,
+                "Email already exists",
+                {}
+            );
+        }
+
+
+        const userData = {
+            name,
+            email,
+            password,
+            role
+        };
+
         const addData = await user.create(userData);
 
         console.log("add data", addData);
 
-        responseSend(res, CODES?.CREATED, true, "Registration  user Successful", addData);
+        return responseSend(
+            res,
+            CODES?.CREATED,
+            true,
+            "Registration user successful",
+            addData
+        );
 
     } catch (error) {
-        responseSend(res, CODES?.INTERNAL_SERVER_ERROR, false, "Error Creating registration", {});
-    }
+        console.log("Register User Error:", error);
 
+        return responseSend(
+            res,
+            CODES?.INTERNAL_SERVER_ERROR,
+            false,
+            "Error creating registration",
+            {}
+        );
+    }
 };
+
 
 // get user list  query
 exports.getUser = async (req, res) => {
@@ -49,26 +101,6 @@ exports.getloginUser = async (req, res) => {
     try {
         const { email, password } = req;
 
-        // Email Validation
-        if (!email) {
-            return responseSend(
-                res,
-                CODES.BAD_REQUEST,
-                false,
-                "Email is required",
-                {}
-            );
-        }
-        // Password Validation
-        if (!password) {
-            return responseSend(
-                res,
-                CODES.BAD_REQUEST,
-                false,
-                "Password is required",
-                {}
-            );
-        }
         const userData = await user.findOne({
             email,
 

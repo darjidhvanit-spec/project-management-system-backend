@@ -48,6 +48,24 @@ exports.getUser = async (req, res) => {
 exports.getloginUser = async (req, res) => {
     try {
         let request = req.body
+        // Validation Rules
+        const validationRules = {
+            email: VALIDATION_RULES.REQUIRED,
+            password: VALIDATION_RULES.REQUIRED,
+
+        };
+
+        const validate = await checkValidationRules(request, validationRules);
+
+        if (!validate.status) {
+            return responseSend(
+                res,
+                CODES.BAD_REQUEST,
+                false,
+                validate.error,
+                {}
+            );
+        }
         const userlogin = await userModel.getloginUser(request, res);
     } catch (error) {
         responseSend(res, CODES?.INTERNAL_SERVER_ERROR, "Error fetching userlogin", false, {});
