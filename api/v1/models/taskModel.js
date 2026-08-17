@@ -30,6 +30,10 @@ exports.createTask = async (req, res) => {
             return responseSend(res, CODES.NOT_FOUND, false, "Assigned user not found", {});
         }
 
+        if (assignedUserData.role !=="Member") {
+            return responseSend(res, CODES.UNAUTHORIZED,false,"Only Member can be assigned to  a task",{});
+        }
+
 
         const createdByUserData = await user.findOne({
             _id: createdBy,
@@ -39,6 +43,10 @@ exports.createTask = async (req, res) => {
         if (!createdByUserData) {
             return responseSend(res, CODES.NOT_FOUND, false, "Created By user not found", {}
             );
+        }
+
+        if(createdByUserData.role !== "Manager") {
+            return responseSend (res , CODES.UNAUTHORIZED, false, "Only Manager can create  a task",{});
         }
 
 
