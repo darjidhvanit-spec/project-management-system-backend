@@ -1,14 +1,16 @@
 const { default: mongoose } = require("mongoose");
 const { responseSend, generateToken } = require("../../../middleware/middleware");
 const user = require("../../../modules/schema/userSchema");
+const project = require("../../../modules/schema/projectSchema");
+const task = require("../../../modules/schema/taskSchema");
 const { CODES } = require("../../../config/constant");
 
 // Create User Insert Query 
 exports.RegisterUser = async (req, res) => {
-      try {
+    try {
         const { name, email, password, role } = req;
 
-        
+
         const nameRegex = /^[A-Za-z]+$/;
 
         if (!nameRegex.test(name.trim())) {
@@ -35,7 +37,7 @@ exports.RegisterUser = async (req, res) => {
         }
 
 
-      
+
         const emailExists = await user.findOne({
             email
         });
@@ -284,6 +286,88 @@ exports.deleteUser = async (req, res) => {
     } catch (error) {
         console.log("DELETE USER ERROR =>", error);
         return responseSend(res, CODES?.INTERNAL_SERVER_ERROR, false, "Error deleting user",
+            {}
+        );
+    }
+};
+
+//get Dashboard Count query  
+exports.getDashboardCount = async (req, res) => {
+     try {
+
+        const [ totalProjectCount, planningProjectCount, activeProjectCount, completedProjectCount, totalTaskCount, todoTaskCount, inProgressTaskCount, reviewTaskCount, completedTaskCount ] = await Promise.all([
+            // Total Projects
+            project.countDocuments(),
+
+            // Planning Projects
+            project.countDocuments({
+                status: "Planning"
+            }),
+
+            // In Progress Projects
+            project.countDocuments({
+                status: "In Progress"
+            }),
+
+            // Completed Projects
+            project.countDocuments({
+                status: "Completed"
+            }),
+
+            // Total Tasks
+            task.countDocuments(),
+
+            // Todo Tasks
+            task.countDocuments({
+                status: "Todo"
+            }),
+
+            // In Progress Tasks
+            task.countDocuments({
+                status: "In Progress"
+            }),
+
+            // Review Tasks
+            task.countDocuments({
+                status: "Review"
+            }),
+
+            // Completed Tasks
+            task.countDocuments({
+                status: "Completed"
+            })
+        ]);
+
+        return responseSend(
+            res,
+            CODES?.SUCCESS,
+            true,
+            "Dashboard Count Retrieved Successfully",
+            {
+
+                // Project
+                totalProjectCount,
+                planningProjectCount,
+                activeProjectCount,
+                completedProjectCount,
+
+                // Task
+                totalTaskCount,
+                todoTaskCount,
+                inProgressTaskCount,
+                reviewTaskCount,
+                completedTaskCount
+
+            }
+        );
+
+    } catch (error) {
+        console.log("Dashboard Count Error:", error);
+        return responseSend(
+            res,
+            CODES?.INTERNAL_SERVER_ERROR,
+            false,
+            "Error Fetching Dashboard Count",
             {}
         );
     }

@@ -105,3 +105,14 @@ exports.deleteUser =  async (req ,  res) =>{
         responseSend(res, CODES?.INTERNAL_SERVER_ERROR, "Error fetching Userdelete", false, {});
     }
 };
+
+//get Dashboard Count query  
+exports.getDashboardCount =  async (req , res) =>{
+      try {
+        let request = req.body
+        const DashboardCount = await userModel.getDashboardCount(request, res);
+    } catch (error) {
+        responseSend(res, CODES?.INTERNAL_SERVER_ERROR, "Error fetching DashboardCount", false, {});
+    }
+    
+};

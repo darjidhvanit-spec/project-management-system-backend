@@ -17,6 +17,8 @@ router.put("/user_update",User_Routes.updateUser);
 
 router.delete("/user_delete",User_Routes.deleteUser);
 
+router.get("/dashboard_count",User_Routes.getDashboardCount);
+ 
 
 
 module.exports =  router;
