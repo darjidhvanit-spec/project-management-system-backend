@@ -1,6 +1,7 @@
 const { default: mongoose } = require("mongoose");
 const { responseSend } = require("../../../middleware/middleware");
 const project = require("../../../modules/schema/projectSchema");
+const user = require("../../../modules/schema/userSchema");
 const { CODES } = require("../../../config/constant");
 
 // Create Project Insert Query
@@ -8,11 +9,20 @@ exports.createProject = async (req, res) => {
     try {
         const { projectName, description, startDate, endDate, priority, status, createdBy } = req;
 
+
+        const userData = await user.findOne({
+            _id: createdBy
+        });
+        if (!userData) {
+            return responseSend(res, CODES?.NOT_FOUND, false, "User not found", {});
+        }
+
+        if (userData.role !== "Manager") {
+            return responseSend(res, CODES?.UNAUTHORIZED, false, "Only Manager can create a project", {});
+        }
+
         const projectadd = await project.create({ projectName, description, startDate, endDate, priority: priority || "Medium", status: status || "Planning", createdBy });
 
-        // -----------------------------
-        // Aggregation with User Lookup
-        // -----------------------------
 
         const projectData = await project.aggregate([
             {
@@ -46,10 +56,7 @@ exports.createProject = async (req, res) => {
                     endDate: 1,
                     priority: 1,
                     status: 1,
-                    // isActive: 1,
-                    // isDelete: 1,
-                    // createdAt: 1,
-                    // updatedAt: 1,
+
 
                     createdBy: {
                         _id: "$createdByUser._id",
