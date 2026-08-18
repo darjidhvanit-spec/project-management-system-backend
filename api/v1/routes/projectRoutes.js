@@ -6,7 +6,7 @@ const Project_Routes = require("../controllers/projectControllers");
 
 router.post("/project_add",Project_Routes.createProject);
 
-router.get("/project_list",Project_Routes.getProject);
+router.post("/project_list",Project_Routes.getProject);
 
 router.put("/project_update",Project_Routes.updateProject);
 
