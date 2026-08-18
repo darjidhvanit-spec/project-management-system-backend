@@ -6,7 +6,7 @@ const Task_Routes =  require("../../v1/controllers/taskControllers");
 
 router.post("/task_add",Task_Routes.createTask);
 
-router.get("/task_list",Task_Routes.getTask);
+router.post("/task_list",Task_Routes.getTask);
 
 router.put("/task_update",Task_Routes.updateTask);
 
