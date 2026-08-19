@@ -191,32 +191,31 @@ exports.createTask = async (req, res) => {
 // get task list query  
 exports.getTask = async (req, res) => {
     try {
-        const  {taskTitle ,priority ,status} =  req;
+        // const  {taskTitle ,priority ,status} =  req;
 
-         const matchCondition = {};
+        //  const matchCondition = {};
 
-          if (taskTitle) {
-            matchCondition.taskTitle = {
-                $regex: taskTitle,
-                $options: "i"
-            };
-        }
+        //   if (taskTitle) {
+        //     matchCondition.taskTitle = {
+        //         $regex: taskTitle,
+        //         $options: "i"
+        //     };
+        // }
 
-          if (priority) {
-            matchCondition.priority = priority;
-        }
+        //   if (priority) {
+        //     matchCondition.priority = priority;
+        // }
 
 
-        if (status) {
-            matchCondition.status = status;
-        }
-
+        // if (status) {
+        //     matchCondition.status = status;
+        // }
 
         const taskData = await task.aggregate([
 
-            {
-                $match: matchCondition
-            },
+            // {
+            //     $match: matchCondition
+            // },
 
             {
                 $lookup: {
