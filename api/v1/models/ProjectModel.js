@@ -77,30 +77,44 @@ exports.createProject = async (req, res) => {
 // get project list query  
 exports.getProject = async (req, res) => {
     try {
-        // const { projectName, priority, status } = req;
+        const { projectName, priority, status } = req;
+        const page = parseInt(req.page) || 1;
+        const limit = parseInt(req.per_page) || 10;
 
-        // const matchCondition = {};
+        const matchCondition = {};
 
-        // if (projectName) {
-        //     matchCondition.projectName = {
-        //         $regex: projectName,
-        //         $options: "i"
-        //     }
-        // }
+        if (projectName) {
+            matchCondition.projectName = {
+                $regex: projectName,
+                $options: "i"
+            }
+        }
 
-        // if (priority) {
-        //     matchCondition.priority = priority;
-        // }
+        if (priority) {
+            matchCondition.priority = priority;
+        }
 
-        // if (status) {
-        //     matchCondition.status = status;
-        // }
+        if (status) {
+            matchCondition.status = status;
+        }
+
+        const totalRecords = await project.countDocuments(matchCondition);
+
+        const totalPages = totalRecords > 0 ? Math.ceil(totalRecords / limit) : 1;
+
+        let currentPage = page;
+
+        if (currentPage > totalPages) {
+            currentPage = 1;
+        }
+
+        const skip = (currentPage - 1) * limit;
 
 
         const projectData = await project.aggregate([
-            // {
-            //     $match: matchCondition
-            // },
+            {
+                $match: matchCondition
+            },
 
             // Join tbl_users
             {
@@ -143,10 +157,25 @@ exports.getProject = async (req, res) => {
                 $sort: {
                     createdAt: -1
                 }
+            },
+            {
+                $skip: skip
+            },
+            {
+                $limit: limit
             }
 
         ]);
-        responseSend(res, CODES?.SUCCESS, true, "Project list fetched successfully", projectData
+        responseSend(res, CODES?.SUCCESS, true, "Project list fetched successfully",
+            {
+                projectData,
+                pagination: {
+                    totalRecords,
+                    currentPage: page,
+                    perPage: limit,
+                    totalPages: Math.ceil(totalRecords / limit)
+                }
+            }
         );
 
     } catch (error) {

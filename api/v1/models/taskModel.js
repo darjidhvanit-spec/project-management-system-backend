@@ -30,8 +30,8 @@ exports.createTask = async (req, res) => {
             return responseSend(res, CODES.NOT_FOUND, false, "Assigned user not found", {});
         }
 
-        if (assignedUserData.role !=="Member") {
-            return responseSend(res, CODES.UNAUTHORIZED,false,"Only Member can be assigned to  a task",{});
+        if (assignedUserData.role !== "Member") {
+            return responseSend(res, CODES.UNAUTHORIZED, false, "Only Member can be assigned to  a task", {});
         }
 
 
@@ -45,8 +45,8 @@ exports.createTask = async (req, res) => {
             );
         }
 
-        if(createdByUserData.role !== "Manager") {
-            return responseSend (res , CODES.UNAUTHORIZED, false, "Only Manager can create  a task",{});
+        if (createdByUserData.role !== "Manager") {
+            return responseSend(res, CODES.UNAUTHORIZED, false, "Only Manager can create  a task", {});
         }
 
 
@@ -191,31 +191,45 @@ exports.createTask = async (req, res) => {
 // get task list query  
 exports.getTask = async (req, res) => {
     try {
-        // const  {taskTitle ,priority ,status} =  req;
+        const { taskTitle, priority, status } = req;
+        const page = parseInt(req.page) || 1;
+        const limit = parseInt(req.per_page) || 10;
 
-        //  const matchCondition = {};
+        const matchCondition = {};
 
-        //   if (taskTitle) {
-        //     matchCondition.taskTitle = {
-        //         $regex: taskTitle,
-        //         $options: "i"
-        //     };
-        // }
+        if (taskTitle) {
+            matchCondition.taskTitle = {
+                $regex: taskTitle,
+                $options: "i"
+            };
+        }
 
-        //   if (priority) {
-        //     matchCondition.priority = priority;
-        // }
+        if (priority) {
+            matchCondition.priority = priority;
+        }
 
+        if (status) {
+            matchCondition.status = status;
+        }
 
-        // if (status) {
-        //     matchCondition.status = status;
-        // }
+        const totalRecords = await task.countDocuments(matchCondition);
+
+        const totalPages = totalRecords > 0 ? Math.ceil(totalRecords / limit) : 1;
+
+        let currentPage = page;
+
+        if (currentPage > totalPages) {
+            currentPage = 1;
+        }
+
+        const skip = (currentPage - 1) * limit;
+
 
         const taskData = await task.aggregate([
 
-            // {
-            //     $match: matchCondition
-            // },
+            {
+                $match: matchCondition
+            },
 
             {
                 $lookup: {
@@ -309,15 +323,32 @@ exports.getTask = async (req, res) => {
 
                 }
             },
-
             {
                 $sort: {
                     createdAt: -1
                 }
+            },
+            {
+                $skip: skip
+            },
+            {
+                $limit: limit
             }
         ]);
 
-        return responseSend(res, CODES.SUCCESS, true, "Task list fetched successfully", taskData);
+        return responseSend(res, CODES.SUCCESS, true, "Task list fetched successfully",
+          
+            {
+                taskData,
+                pagination: {
+                    totalRecords,
+                    currentPage: page,
+                    perPage: limit,
+                    totalPages: Math.ceil(totalRecords / limit)
+                }
+
+            }
+        );
 
     } catch (error) {
         console.log("Get Task List Error:", error);
