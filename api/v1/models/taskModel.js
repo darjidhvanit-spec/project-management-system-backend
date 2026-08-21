@@ -30,8 +30,8 @@ exports.createTask = async (req, res) => {
             return responseSend(res, CODES.NOT_FOUND, false, "Assigned user not found", {});
         }
 
-        if (assignedUserData.role !== "Member") {
-            return responseSend(res, CODES.UNAUTHORIZED, false, "Only Member can be assigned to  a task", {});
+        if (assignedUserData.role !== "Member" && assignedUserData.role !=="Admin") {
+            return responseSend(res, CODES.UNAUTHORIZED, false, "Only Member or Admin can be assigned to a task", {});
         }
 
 
@@ -230,6 +230,11 @@ exports.getTask = async (req, res) => {
             {
                 $match: matchCondition
             },
+             {
+                $sort: {
+                    createdAt: -1
+                }
+            },
 
             {
                 $lookup: {
@@ -321,11 +326,6 @@ exports.getTask = async (req, res) => {
                         role: "$createdByUser.role"
                     },
 
-                }
-            },
-            {
-                $sort: {
-                    createdAt: -1
                 }
             },
             {
