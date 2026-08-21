@@ -30,8 +30,8 @@ exports.createTask = async (req, res) => {
             return responseSend(res, CODES.NOT_FOUND, false, "Assigned user not found", {});
         }
 
-        if (assignedUserData.role !== "Member" && assignedUserData.role !=="Admin") {
-            return responseSend(res, CODES.UNAUTHORIZED, false, "Only Member or Admin can be assigned to a task", {});
+        if (assignedUserData.role !== "Member") {
+            return responseSend(res, CODES.UNAUTHORIZED, false, "Only Member can be assigned to  a task", {});
         }
 
 
@@ -45,8 +45,8 @@ exports.createTask = async (req, res) => {
             );
         }
 
-        if (createdByUserData.role !== "Manager") {
-            return responseSend(res, CODES.UNAUTHORIZED, false, "Only Manager can create  a task", {});
+        if (createdByUserData.role !== "Manager" && createdByUserData.role !== "Admin") {
+            return responseSend(res, CODES.UNAUTHORIZED, false, "Only Manager or Admin  can create  a task", {});
         }
 
 
@@ -230,7 +230,7 @@ exports.getTask = async (req, res) => {
             {
                 $match: matchCondition
             },
-             {
+            {
                 $sort: {
                     createdAt: -1
                 }
@@ -337,7 +337,7 @@ exports.getTask = async (req, res) => {
         ]);
 
         return responseSend(res, CODES.SUCCESS, true, "Task list fetched successfully",
-          
+
             {
                 taskData,
                 pagination: {
