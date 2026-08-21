@@ -17,8 +17,8 @@ exports.createProject = async (req, res) => {
             return responseSend(res, CODES?.NOT_FOUND, false, "User not found", {});
         }
 
-        if (userData.role !== "Manager") {
-            return responseSend(res, CODES?.UNAUTHORIZED, false, "Only Manager can create a project", {});
+        if (userData.role !== "Manager" && userData.role !=="Admin") {
+            return responseSend(res, CODES?.UNAUTHORIZED, false, "Only Manager or Admin can create a project", {});
         }
 
         const projectadd = await project.create({ projectName, description, startDate, endDate, priority: priority || "Medium", status: status || "Planning", createdBy });
@@ -115,6 +115,12 @@ exports.getProject = async (req, res) => {
             {
                 $match: matchCondition
             },
+             // Latest Project First
+            {
+                $sort: {
+                    createdAt: -1
+                }
+            },
 
             // Join tbl_users
             {
@@ -149,13 +155,6 @@ exports.getProject = async (req, res) => {
                         email: "$createdByUser.email",
                         role: "$createdByUser.role"
                     },
-                }
-            },
-
-            // Latest Project First
-            {
-                $sort: {
-                    createdAt: -1
                 }
             },
             {
